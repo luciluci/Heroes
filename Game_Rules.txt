@@ -1,0 +1,11 @@
+Game rules:
+1. 
+
+2. Difficulty - easy 
+	In Easy mode you can only use characters with default life damage.
+	
+Damage types:   Life damage: gives -1 live on every round
+
+				Poison (on every round the poison takes 1p of life from the invected warewolf)
+				Poison can be used only from Medium difficulty up
+				  
