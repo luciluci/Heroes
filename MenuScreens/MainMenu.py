@@ -9,8 +9,9 @@ from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
+from PlayScreen import PlayScreen
+
 
 Builder.load_string("""
 <LoadingScreen>:
@@ -114,13 +115,6 @@ Builder.load_string("""
             text: 'Back to menu'
             on_press: root.manager.current = 'menu'
             size_hint: .2, .1
-<PlayScreen>:
-    FloatLayout:
-        Label:
-            text: 'PLAY'
-        Button:
-            text: 'Back to menu'
-            on_press: root.manager.current = 'menu'
 <PlayOnline>:
     FloatLayout:
         Label:
@@ -146,9 +140,6 @@ class LoginScreen(Screen):
         print "signing in"
     pass
 
-class PlayScreen(Screen):
-    pass
-
 class PlayOnline(Screen):
     pass
 
@@ -159,8 +150,7 @@ class SignupScreen(Screen):
     def register(self):
         print "registering"
         box = BoxLayout()
-        box.add_widget(Label(text='Hello world'))
-        box.add_widget(TextInput(text='Hi'))
+        box.add_widget(Label(text='Registration successful'))
         
         popup = Popup(title='Registration',
                       content=box,
