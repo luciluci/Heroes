@@ -23,20 +23,12 @@ class Varcolac(Widget):
     direction_x = 1
     direction_y = 0
     direction = direction_x, direction_y
+    isMoving = True;
 
-    def create(self):
-        posx = random.randint(100, 480)
-        posy = random.randint(100, 480)
-        with self.canvas:
-            Color(1, 1, 0)
-            d = 30.
-            Ellipse(pos=(posx, posy), size=(d, d))
-        print "create varcolac"
+    def stopMovement(self, dt):
+        self.isMoving = False;
     
     def move(self, dt):
         self.pos = Vector(*self.direction) + self.pos
         print self.pos
-        print "move varcolac"
-        
-    def on_touch_move(self, touch):
-        print "on_touch_move"
+        return self.isMoving
