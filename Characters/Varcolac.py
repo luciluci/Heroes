@@ -32,3 +32,23 @@ class Varcolac(Widget):
         self.pos = Vector(*self.direction) + self.pos
         print self.pos
         return self.isMoving
+    
+    def directionUp(self):
+        self.direction_x = 0
+        self.direction_y = 1
+        self.direction = self.direction_x, self.direction_y
+        
+    def directionDown(self):
+        self.direction_x = 0
+        self.direction_y = -1
+        self.direction = self.direction_x, self.direction_y
+        
+    def directionLeft(self):
+        self.direction_x = -1
+        self.direction_y = 0
+        self.direction = self.direction_x, self.direction_y
+        
+    def directionRight(self):
+        self.direction_x = 1
+        self.direction_y = 0
+        self.direction = self.direction_x, self.direction_y

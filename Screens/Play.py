@@ -22,6 +22,7 @@ class PlayScreen(Screen):
         
         varcolac = Varcolac()
         varcolac.pos = (150, 150)
+        varcolac.directionUp()
         Clock.schedule_interval(varcolac.move, 1.0 / 60.0)
         
         backButton = Button(text="back")
