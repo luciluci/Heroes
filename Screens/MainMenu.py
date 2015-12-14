@@ -7,7 +7,6 @@ Created on Dec 9, 2015
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
 
-
 Builder.load_string("""
 <MenuScreen>:
     FloatLayout:
@@ -31,9 +30,9 @@ Builder.load_string("""
             pos: 200, 270
             size_hint: .5, .1
             on_press: root.manager.current = 'login'
+        
 """)
 
 # Declare screens
 class MenuScreen(Screen):
     pass
-    

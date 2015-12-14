@@ -4,11 +4,8 @@ Created on Dec 10, 2015
 @author: Lucian Apetre
 '''
 from kivy.uix.widget import Widget
-from kivy.graphics import Color, Ellipse
 from kivy.vector import Vector
 from kivy.lang import Builder
-import random
-
 
 Builder.load_string("""
 <Varcolac>:
@@ -24,14 +21,21 @@ class Varcolac(Widget):
     direction_y = 0
     direction = direction_x, direction_y
     isMoving = True;
+    labirinth = None
 
     def stopMovement(self, dt):
         self.isMoving = False;
     
     def move(self, dt):
         self.pos = Vector(*self.direction) + self.pos
-        print self.pos
+        if self.labirinth:
+            if self.labirinth.collide_widget(self):
+                print "collision"
+        #print self.pos
         return self.isMoving
+    
+    def setLabirinth(self, labirinth):
+        self.labirinth = labirinth
     
     def directionUp(self):
         self.direction_x = 0
