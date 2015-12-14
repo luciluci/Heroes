@@ -37,8 +37,7 @@ class PlayScreen(Screen):
     def on_enter(self, *args):        
         
         self.varcolac.pos = (150, 150)
-        self.varcolac.directionUp()
-        self.varcolac.setLabirinth(self.labirinth)
+        self.varcolac.directionRight()
         
         Clock.schedule_interval(self.varcolac.move, 1.0 / 60.0)
         
@@ -55,7 +54,4 @@ class PlayScreen(Screen):
                
     def goBack(self, caller):
         self.manager.current = 'menu'
-        
-    def placeVarcolac(self, varcolac):
-        varcolac.velocity = (1, 1)
         

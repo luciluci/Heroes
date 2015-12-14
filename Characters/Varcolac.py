@@ -21,22 +21,14 @@ class Varcolac(Widget):
     direction_y = 0
     direction = direction_x, direction_y
     isMoving = True;
-    labirinth = None
 
     def stopMovement(self, dt):
         self.isMoving = False;
     
     def move(self, dt):
         self.pos = Vector(*self.direction) + self.pos
-        if self.labirinth:
-            if self.labirinth.collide_widget(self):
-                print "collision"
-        #print self.pos
         return self.isMoving
-    
-    def setLabirinth(self, labirinth):
-        self.labirinth = labirinth
-    
+        
     def directionUp(self):
         self.direction_x = 0
         self.direction_y = 1
