@@ -7,6 +7,7 @@ from kivy.uix.widget import Widget
 from kivy.vector import Vector
 from kivy.lang import Builder
 from Globals import Types
+from kivy.graphics import Ellipse, Color
 
 Builder.load_string("""
 <Varcolac>:
@@ -30,14 +31,14 @@ class Varcolac(Widget):
     routeIndex = 0
     
     def __init__(self, x, y):
+        super(Varcolac, self).__init__()
         self.pos = (x, y)
         #set first checkpoint to current position. workaround for not messing up the recursivity in moveTo method
         self.goToX = x
         self.goToY = y
-        super(Varcolac, self).__init__()
 
     def stopMovement(self):
-        print "varcolacul s-a oprit"
+        #print "varcolacul s-a oprit"
         self.isMoving = False;
     
     def run(self, dt):
@@ -60,7 +61,7 @@ class Varcolac(Widget):
         if self.direction == (0, 0):
             checkPoint = self._getNextCheckPoint()
             if checkPoint:
-                print "next point %d %d" % (checkPoint[0], checkPoint[1])
+                #print "next point %d %d" % (checkPoint[0], checkPoint[1])
                 (self.goToX, self.goToY) = checkPoint
                 self.run(Types.FRAME_REFRESH_RATE)
         if self.direction == (0, 0):
@@ -70,12 +71,12 @@ class Varcolac(Widget):
     
     def _move(self, dt):
         self.pos = Vector(*self.direction) + self.pos
+        self.canvas.ask_update()
         return self.isMoving
     
     def setRoute(self, route):
         self.route = list(route)
         self.route.reverse()
-        print "manele"
             
     def _getNextCheckPoint(self):
         if len(self.route) <= 0:
