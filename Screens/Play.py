@@ -10,26 +10,11 @@ from Characters.Varcolac import Varcolac
 from kivy.clock import Clock
 from kivy.uix.widget import Widget
 from Globals import Types
-from kivy.graphics import Ellipse, Color, Rectangle
+from kivy.graphics import Ellipse, Color, Rectangle, Line
 from kivy.core.image import Image
-from kivy.lang import Builder
+from kivy.uix.stacklayout import StackLayout
 import os
 
-Builder.load_string('''
-<LineEllipse1>:
-    canvas:
-        Color:
-            rgba: 1, .1, .1, .9
-        Line:
-            width: 2.
-            ellipse: (self.x, self.y, self.width, self.height)
-    Label:
-        center: root.center
-        text: 'Ellipse'
-''')
-
-class LineEllipse1:
-    pass
 
 class Background(Widget):
     
@@ -42,7 +27,6 @@ class Background(Widget):
             texture.wrap = 'repeat'
             texture.uvsize = (8,8)
             Rectangle(texture=texture, size=(800, 600), pos=self.pos)
-            self.canvas.ask_update()
         
 class Tower(Widget):
     
@@ -54,6 +38,16 @@ class Tower(Widget):
             d = 30.
             Ellipse(pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
             Color(1, 1, 1)
+            
+class GameControls(Widget):
+    
+    def __init__(self):
+        super(GameControls, self).__init__()
+        
+        with self.canvas:
+            Color(.1, .1, 1, .9)
+            Line(width = 2., rectangle=(self.x, self.y, self.width, self.height))
+            Color(1, 1, 1)
 
 class PlayScreen(Screen):
 
@@ -62,6 +56,9 @@ class PlayScreen(Screen):
     varcolaci = []
     backButton = None
     screenAlive = False
+    menuBar = None
+    controls = None
+    
     
     def __init__(self, name):
         super(PlayScreen, self).__init__()
@@ -77,19 +74,32 @@ class PlayScreen(Screen):
         self.backButton.size_hint_y = 0.1
         self.backButton.bind(on_release = self.goBack)
         
+        self.controls = GameControls()
+        
+        
     def on_pre_enter(self, *args):
         Screen.on_pre_enter(self, *args)
         self.clear_widgets()
         
     def on_enter(self, *args):
         self.screenAlive = True
+
+        self.menuBar = StackLayout(spacing=10)
+        self.menuBar.add_widget(self.backButton)
+        self.menuBar.add_widget(self.controls)
         
         self.add_widget(self.background)
-        self.add_widget(self.backButton)
+        self.add_widget(self.menuBar)
 
+        #throw first varcolac in the game
         Clock.schedule_once(self.addVarcolac, 0)
+        
+    def clearMenuBar(self):
+        self.menuBar.remove_widget(self.backButton)
+        self.menuBar.remove_widget(self.controls)
                
     def goBack(self, caller):
+        self.clearMenuBar()
         self.screenAlive = False
         while len(self.varcolaci) > 0:
             varcolac = self.varcolaci.pop()
@@ -105,9 +115,8 @@ class PlayScreen(Screen):
             self.add_widget(varcolac)
             self.varcolaci.append(varcolac)
             Clock.schedule_interval(varcolac.run, Types.FRAME_REFRESH_RATE)
-            
+            #throw another varcolac in the game
             Clock.schedule_once(self.addVarcolac, 1)
-            
     
     def addTower(self, touch):
         tower = Tower(touch)
