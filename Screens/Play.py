@@ -21,7 +21,9 @@ from kivy.lang import Builder
 Builder.load_string(
 """
 <Controls>
-    hScore: score_holder
+    mScore: score
+    mLife: life
+    mGelb: gelb
     FloatLayout:
         Widget:
             size_hint: None, None
@@ -34,7 +36,11 @@ Builder.load_string(
                     pos: self.pos
                     size: self.size
     Score:
-        id: score_holder
+        id: score
+    Life: 
+        id: life
+    Gelb:
+        id: gelb
 <Score>
     size: 150, 50
     pos: 70, 70
@@ -50,6 +56,38 @@ Builder.load_string(
     Label:
         pos: 120, 45
         text: str(root.score)
+        
+<Life>
+    size: 150, 50
+    pos: 230, 70
+    canvas:
+        Color:
+            rgba: .1, .5, .1, .5
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Label:
+        pos: 230, 45
+        text: "LIFE:"
+    Label:
+        pos: 260, 45
+        text: str(root.val)
+        
+<Gelb>
+    size: 150, 50
+    pos: 390, 70
+    canvas:
+        Color:
+            rgba: .1, .5, .1, .5
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Label:
+        pos: 390, 45
+        text: "GELB:"
+    Label:
+        pos: 420, 45
+        text: str(root.amount)
 """)
 
 class Controls(Widget):
@@ -57,7 +95,12 @@ class Controls(Widget):
 
 class Score(Widget):
     score = 1
-    pass
+
+class Life(Widget):
+    val = 100
+
+class Gelb(Widget):
+    amount = 1000
 
 class Background(Widget):
     
