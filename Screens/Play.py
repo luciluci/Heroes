@@ -13,8 +13,51 @@ from Globals import Types
 from kivy.graphics import Ellipse, Color, Rectangle, Line
 from kivy.core.image import Image
 from kivy.uix.stacklayout import StackLayout
+from kivy.uix.label import Label
 import os
 
+from kivy.lang import Builder
+
+Builder.load_string(
+"""
+<Controls>
+    hScore: score_holder
+    FloatLayout:
+        Widget:
+            size_hint: None, None
+            size: 730, 100
+            pos: 30, 30
+            canvas:
+                Color:
+                    rgba: .5, .1, .1, .5
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+    Score:
+        id: score_holder
+<Score>
+    size: 150, 50
+    pos: 70, 70
+    canvas:
+        Color:
+            rgba: .1, .5, .1, .5
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Label:
+        pos: 70, 45
+        text: "Score:"
+    Label:
+        pos: 120, 45
+        text: str(root.score)
+""")
+
+class Controls(Widget):
+    pass
+
+class Score(Widget):
+    score = 1
+    pass
 
 class Background(Widget):
     
@@ -39,15 +82,17 @@ class Tower(Widget):
             Ellipse(pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
             Color(1, 1, 1)
             
-class GameControls(Widget):
-    
-    def __init__(self):
-        super(GameControls, self).__init__()
-        
-        with self.canvas:
-            Color(.1, .1, 1, .9)
-            Line(width = 2., rectangle=(self.x, self.y, self.width, self.height))
-            Color(1, 1, 1)
+#===============================================================================
+# class GameControls(Widget):
+#     
+#     def __init__(self):
+#         super(GameControls, self).__init__()
+#         
+#         with self.canvas:
+#             Color(.1, .4, 4, .5)
+#             Rectangle(pos = (110, self.center_y), size = (150, self.height/2), center=self.center)
+#             Color(1, 1, 1)
+#===============================================================================
 
 class PlayScreen(Screen):
 
@@ -57,7 +102,8 @@ class PlayScreen(Screen):
     backButton = None
     screenAlive = False
     menuBar = None
-    controls = None
+    #controls = None
+    #score = None
     
     
     def __init__(self, name):
@@ -74,8 +120,14 @@ class PlayScreen(Screen):
         self.backButton.size_hint_y = 0.1
         self.backButton.bind(on_release = self.goBack)
         
-        self.controls = GameControls()
-        
+        #self.controls = GameControls()
+                
+        #=======================================================================
+        # self.score = Label()
+        # self.score.text = "Score:"
+        # self.score.pos = (120, self.controls.center_y-25)
+        # self.controls.add_widget(self.score)
+        #=======================================================================
         
     def on_pre_enter(self, *args):
         Screen.on_pre_enter(self, *args)
@@ -86,17 +138,21 @@ class PlayScreen(Screen):
 
         self.menuBar = StackLayout(spacing=10)
         self.menuBar.add_widget(self.backButton)
-        self.menuBar.add_widget(self.controls)
+        #self.menuBar.add_widget(self.controls)
         
         self.add_widget(self.background)
         self.add_widget(self.menuBar)
+        controls = Controls()
+        self.add_widget(controls)
 
         #throw first varcolac in the game
         Clock.schedule_once(self.addVarcolac, 0)
         
     def clearMenuBar(self):
         self.menuBar.remove_widget(self.backButton)
-        self.menuBar.remove_widget(self.controls)
+        #self.controls.remove_widget(self.score)
+        #self.menuBar.remove_widget(self.controls)
+        
                
     def goBack(self, caller):
         self.clearMenuBar()
@@ -106,6 +162,7 @@ class PlayScreen(Screen):
             varcolac.stopMovement()
             self.remove_widget(varcolac)
         self.manager.current = 'menu'
+        self.clear_widgets()
         
     def addVarcolac(self, dt):
         if(self._isScreenAlive() and len(self.varcolaci) < 5):

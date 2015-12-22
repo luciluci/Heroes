@@ -12,6 +12,9 @@ from kivy.graphics import Ellipse, Color
 Builder.load_string("""
 <Varcolac>:
     size: 30, 30
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1 
     canvas:
         Ellipse:
             pos: self.pos
