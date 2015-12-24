@@ -7,7 +7,10 @@ from kivy.uix.widget import Widget
 from kivy.vector import Vector
 from kivy.lang import Builder
 from Globals import Types
-from kivy.graphics import Ellipse, Color
+import datetime
+from kivy.core.image import Image
+import os
+
 
 Builder.load_string("""
 <Varcolac>:
@@ -29,16 +32,23 @@ class Varcolac(Widget):
     isMoving = True;
     goToX = 0
     goToY = 0
+    speed = 2
     
     route = []
     routeIndex = 0
     
-    def __init__(self, x, y):
+   # image = Image((os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Resources')))+"robot_right.gif")
+    
+    def __init__(self):
         super(Varcolac, self).__init__()
-        self.pos = (x, y)
+        #self.pos = (x, y)
+        self.pos = Types.SCREEN_ENTRY_POINT
         #set first checkpoint to current position. workaround for not messing up the recursivity in moveTo method
-        self.goToX = x
-        self.goToY = y
+        self.goToX = Types.SCREEN_ENTRY_POINT[0]
+        self.goToY = Types.SCREEN_ENTRY_POINT[1]
+        
+        #ResourcesPath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Resources'))
+        #self.image = Image(ResourcesPath+"\\robot_right.gif")
 
     def stopMovement(self):
         #print "varcolacul s-a oprit"
@@ -46,18 +56,20 @@ class Varcolac(Widget):
     
     def run(self, dt):
         if self.x < self.goToX:
-            self.direction_x = 1
+            self.direction_x = self.speed
         elif self.x > self.goToX:
-            self.direction_x = -1
+            self.direction_x = -1 * self.speed
         else:
             self.direction_x = 0
         if self.y < self.goToY:
-            self.direction_y = 1
+            self.direction_y = self.speed
         elif self.y > self.goToY:
-            self.direction_y = -1
+            self.direction_y = -1 * self.speed
         else:
             self.direction_y = 0
         self.direction = self.direction_x, self.direction_y
+        
+        #print "TIME:" + str(datetime.datetime.now().time())
         
         #print "moveTo %d %d From %d %d" %(self.goToX, self.goToY, self.x, self.y)
         

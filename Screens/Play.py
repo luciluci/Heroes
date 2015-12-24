@@ -13,7 +13,6 @@ from Globals import Types
 from kivy.graphics import Ellipse, Color, Rectangle, Line
 from kivy.core.image import Image
 from kivy.uix.stacklayout import StackLayout
-from kivy.uix.label import Label
 import os
 
 from kivy.lang import Builder
@@ -86,7 +85,7 @@ Builder.load_string(
         pos: 390, 45
         text: "GELB:"
     Label:
-        pos: 420, 45
+        pos: 430, 45
         text: str(root.amount)
 """)
 
@@ -113,6 +112,22 @@ class Background(Widget):
             texture.wrap = 'repeat'
             texture.uvsize = (8,8)
             Rectangle(texture=texture, size=(800, 600), pos=self.pos)
+            
+class Road(Widget):
+        
+    def __init__(self, route):
+        super(Road, self).__init__()
+        
+        with self.canvas:
+            Color(1, .9, .6)
+            Line(points=self._getRoutePoints(route), width=10)
+            Color(1, 1, 1)
+            
+    def _getRoutePoints(self, route):
+        retVal = []
+        for point in route:
+            retVal.extend(list(point))
+        return retVal
         
 class Tower(Widget):
     
@@ -124,18 +139,6 @@ class Tower(Widget):
             d = 30.
             Ellipse(pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
             Color(1, 1, 1)
-            
-#===============================================================================
-# class GameControls(Widget):
-#     
-#     def __init__(self):
-#         super(GameControls, self).__init__()
-#         
-#         with self.canvas:
-#             Color(.1, .4, 4, .5)
-#             Rectangle(pos = (110, self.center_y), size = (150, self.height/2), center=self.center)
-#             Color(1, 1, 1)
-#===============================================================================
 
 class PlayScreen(Screen):
 
@@ -145,9 +148,6 @@ class PlayScreen(Screen):
     backButton = None
     screenAlive = False
     menuBar = None
-    #controls = None
-    #score = None
-    
     
     def __init__(self, name):
         super(PlayScreen, self).__init__()
@@ -155,22 +155,17 @@ class PlayScreen(Screen):
         
         self.clear_widgets()
         
-        self.route = [(420, 150), (420, 300), (200, 300), (200, 400), (700, 400), (700, 600)]        
+        self.route.append(Types.SCREEN_ENTRY_POINT)
+        self.route.extend([(420, 150), (420, 300), (200, 300), (200, 400), (700, 400)])
+        self.route.append(Types.SCREEN_EXIT_POINT)
+                
         self.background = Background()
+        self.road = Road(self.route)
         
         self.backButton = Button(text="back")
         self.backButton.size_hint_x = 0.2
         self.backButton.size_hint_y = 0.1
         self.backButton.bind(on_release = self.goBack)
-        
-        #self.controls = GameControls()
-                
-        #=======================================================================
-        # self.score = Label()
-        # self.score.text = "Score:"
-        # self.score.pos = (120, self.controls.center_y-25)
-        # self.controls.add_widget(self.score)
-        #=======================================================================
         
     def on_pre_enter(self, *args):
         Screen.on_pre_enter(self, *args)
@@ -181,21 +176,17 @@ class PlayScreen(Screen):
 
         self.menuBar = StackLayout(spacing=10)
         self.menuBar.add_widget(self.backButton)
-        #self.menuBar.add_widget(self.controls)
         
         self.add_widget(self.background)
+        self.add_widget(self.road)
         self.add_widget(self.menuBar)
-        controls = Controls()
-        self.add_widget(controls)
+        self.add_widget(Controls())
 
         #throw first varcolac in the game
         Clock.schedule_once(self.addVarcolac, 0)
         
     def clearMenuBar(self):
         self.menuBar.remove_widget(self.backButton)
-        #self.controls.remove_widget(self.score)
-        #self.menuBar.remove_widget(self.controls)
-        
                
     def goBack(self, caller):
         self.clearMenuBar()
@@ -209,7 +200,8 @@ class PlayScreen(Screen):
         
     def addVarcolac(self, dt):
         if(self._isScreenAlive() and len(self.varcolaci) < 5):
-            varcolac = Varcolac(150, 150)
+            print "one more"
+            varcolac = Varcolac()
             varcolac.setRoute(self.route)
             
             self.add_widget(varcolac)
