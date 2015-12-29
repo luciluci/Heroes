@@ -15,6 +15,8 @@ from kivy.core.image import Image
 from kivy.uix.stacklayout import StackLayout
 import os
 
+ROAD = [(420, 150), (420, 300), (200, 300), (200, 400), (700, 400)]
+
 from kivy.lang import Builder
 
 Builder.load_string(
@@ -89,6 +91,16 @@ Builder.load_string(
         text: str(root.amount)
 """)
 
+class eDirections():
+    DIR_STANDING = 0
+    DIR_UP    = 1
+    DIR_DOWN  = 2
+    DIR_LEFT  = 3
+    DIR_RIGHT = 4
+    direction = 0
+    def __init__(self):
+        self.direction = self.DIR_STANDING
+
 class Controls(Widget):
     pass
 
@@ -108,10 +120,11 @@ class Background(Widget):
         
         with self.canvas:
             ResourcesPath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Resources'))
-            texture = Image(ResourcesPath+'\\grass.png').texture
+            bckImage = Image(ResourcesPath+'\\grass.png')
+            texture = bckImage.texture
             texture.wrap = 'repeat'
-            texture.uvsize = (8,8)
-            Rectangle(texture=texture, size=(800, 600), pos=self.pos)
+            texture.uvsize = ((Types.SCREEN_SIZE_WIDTH/bckImage.width) * Types.SCREEN_TEXTURE_GRANULARITY, (Types.SCREEN_SIZE_HEIGHT/bckImage.height) * Types.SCREEN_TEXTURE_GRANULARITY)
+            Rectangle(texture=texture, size=(Types.SCREEN_SIZE_WIDTH, Types.SCREEN_SIZE_HEIGHT), pos=self.pos)
             
 class Road(Widget):
         
@@ -119,8 +132,30 @@ class Road(Widget):
         super(Road, self).__init__()
         
         with self.canvas:
-            Color(1, .9, .6)
-            Line(points=self._getRoutePoints(route), width=10)
+            ResourcesPath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Resources'))
+            img = Image(ResourcesPath+'\\grass_road_1.png')
+            texture = img.texture
+            texture.wrap = 'repeat'
+            texture.uvsize = (8,8)
+            coordIndex = 0
+            #road data
+            rectWidth = Types.ROAD_WIDTH
+            rectHeight = Types.ROAD_WIDTH
+            p1 = Types.SCREEN_ENTRY_POINT
+            p2 = ROAD[coordIndex]
+            rectStartPosX = Types.SCREEN_ENTRY_POINT[0] - img.width/2
+            rectStartPosY = Types.SCREEN_ENTRY_POINT[1] - img.height/2
+            
+            if (self._getDirection(p1, p2) == eDirections.DIR_LEFT) or (self._getDirection(p1, p2) == eDirections.DIR_RIGHT):
+                rectWidth = p2[0] - p1[0] + img.width
+                rectStartPosY = p1[1] - Types.ROAD_WIDTH/2 #+ Varcolac/2
+            elif (self._getDirection(p1, p2) == eDirections.DIR_DOWN) or (self._getDirection(p1, p2) == eDirections.DIR_UP):
+                rectHeight = p2[1] - p1[1] + img.height
+                rectStartPosX = p1[0] - Types.ROAD_WIDTH/2 #+ Varcolac.height/2
+            else:
+                print "WARNING! Computing road direction failed"
+            Rectangle(texture=texture, size=(rectWidth, rectHeight), pos=(rectStartPosX, rectStartPosY))
+            
             Color(1, 1, 1)
             
     def _getRoutePoints(self, route):
@@ -128,6 +163,24 @@ class Road(Widget):
         for point in route:
             retVal.extend(list(point))
         return retVal
+    
+    def _getDirection(self, point1, point2):
+        retVal = eDirections()
+        if point1[0] == point2[0]:
+            if point1[1] < point2[1]: 
+                retVal.direction = eDirections.DIR_UP
+            elif point1[1] > point2[1]:
+                retVal.direction = eDirections.DIR_DOWN
+            else:
+                retVal.direction = eDirections.DIR_STANDING
+        if point1[1] == point2[1]:
+            if point1[0] < point2[0]: 
+                retVal.direction = eDirections.DIR_RIGHT
+            elif point1[0] > point2[0]:
+                retVal.direction = eDirections.DIR_LEFT
+            else:
+                retVal.direction = eDirections.DIR_STANDING        
+        return retVal.direction
         
 class Tower(Widget):
     
@@ -156,7 +209,8 @@ class PlayScreen(Screen):
         self.clear_widgets()
         
         self.route.append(Types.SCREEN_ENTRY_POINT)
-        self.route.extend([(420, 150), (420, 300), (200, 300), (200, 400), (700, 400)])
+        #self.route.extend([(420, 150), (420, 300), (200, 300), (200, 400), (700, 400)])
+        self.route.extend(ROAD)
         self.route.append(Types.SCREEN_EXIT_POINT)
                 
         self.background = Background()
