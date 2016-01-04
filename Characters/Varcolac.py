@@ -7,9 +7,6 @@ from kivy.uix.widget import Widget
 from kivy.vector import Vector
 from kivy.lang import Builder
 from Globals import Types
-import datetime
-from kivy.core.image import Image
-import os
 
 
 Builder.load_string("""
@@ -39,13 +36,12 @@ class Varcolac(Widget):
     
    # image = Image((os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Resources')))+"robot_right.gif")
     
-    def __init__(self):
+    def __init__(self, road):
         super(Varcolac, self).__init__()
-        #self.pos = (x, y)
-        self.pos = Types.SCREEN_ENTRY_POINT
+        self.pos = road[0]
         #set first checkpoint to current position. workaround for not messing up the recursivity in moveTo method
-        self.goToX = Types.SCREEN_ENTRY_POINT[0]
-        self.goToY = Types.SCREEN_ENTRY_POINT[1]
+        self.goToX = road[0][0]
+        self.goToY = road[0][1]
         
         #ResourcesPath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Resources'))
         #self.image = Image(ResourcesPath+"\\robot_right.gif")
