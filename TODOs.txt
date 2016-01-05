@@ -1,0 +1,26 @@
+* Correct Varcolac display on the Road by taking in consideration Varcolac size
+* Create Towers:
+	* Placement restrictions
+	* Tower cannnot be placed on Road
+	* Tower cannot be placed on game board
+	* Add image to tower
+* Create also Tower factory so we cannot add more than N Towers
+* Add multiple Tower types with more damage posibilities and more skins
+* Add images to Varcolacs
+* Create animated Varcolacs
+* Create screens design
+* Add all Varcolacs in a Varcolac factory and load them on game start not on screen load
+* Add different images for cornered Road
+
+FILIP:
+* Create xml reader for screen
+	* will include: nr of Varcolaci that will be generated, Road map [(x1, y1), (x2, y2)...]
+	* background images and corner images
+* Create xml schema validator
+* Create Tower factory and Varcolac Factory(Read factory pattern)
+
+NOTICE:
+* Commit only source code, no binaries
+* When commit is done the code must work 100%, do not commit partially implementations
+* DO NOT commit code until regression tests(with special care on Varcolac movement or any openGL animation), check screen transitions
+* place "- DONE" at the end of the Task after task completion
