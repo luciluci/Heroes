@@ -1,4 +1,3 @@
-* Correct Varcolac display on the Road by taking in consideration Varcolac size
 * Create Towers:
 	* Placement restrictions
 	* Tower cannnot be placed on Road
@@ -11,6 +10,10 @@
 * Create screens design
 * Add all Varcolacs in a Varcolac factory and load them on game start not on screen load
 * Add different images for cornered Road
+* Correct Varcolac display on the Road by taking in consideration Varcolac size
+
+INVESTIGATE:
+* Convert the game board to grid - can solve many problems
 
 FILIP:
 * Create xml reader for screen

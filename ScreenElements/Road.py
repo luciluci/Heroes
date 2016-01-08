@@ -43,6 +43,7 @@ class Road(Widget):
         
     def __init__(self, route):
         super(Road, self).__init__()
+        self.size_hint = (None, None)
         self._route = route
         self._resourcesPath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Resources'))
         
@@ -100,7 +101,7 @@ class Road(Widget):
         imgTexture = img.texture
         
         for point in range(0, len(self._route)-1):
-                self._drawRoadSegment(self._route[point], self._route[point+1], imgTexture)
+            self._drawRoadSegment(self._route[point], self._route[point+1], imgTexture)
         
     def _drawRoadSegment(self, point1, point2, imgTexture):
         rectWidth = Types.ROAD_WIDTH
@@ -162,3 +163,9 @@ class Road(Widget):
             else:
                 retVal.direction = eDirections.DIR_STANDING        
         return retVal.direction
+    
+    def on_touch_down(self, touch):
+        print "collide road1!!"
+        if self.collide_point(touch.x, touch.y):
+            print "collide road2!!"
+        return Widget.on_touch_down(self, touch)

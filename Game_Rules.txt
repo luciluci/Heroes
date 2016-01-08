@@ -3,6 +3,8 @@ Game rules:
 
 2. Difficulty - easy 
 	In Easy mode you can only use characters with default life damage.
+
+3. Varcolacs can have imunnities and be gain more damage from different elements like fire, ice..
 	
 Damage types:   Life damage: gives -1 live on every round
 
