@@ -8,6 +8,8 @@ from kivy.core.image import Image
 from kivy.graphics import Color, Rectangle
 from kivy.uix.widget import Widget
 from Globals import Types
+from Globals.Types import Point
+from ScreenElements.ScreenGrid import ScreenGrid
 import math
 
 import os
@@ -39,10 +41,12 @@ class eCorner():
 class Road(Widget):
     
     _route = []
-    _resourcesPath = None   
+    _resourcesPath = None
+    _screenGrid = None
         
-    def __init__(self, route):
+    def __init__(self, route, screenGrid):
         super(Road, self).__init__()
+        self._screenGrid = screenGrid
         self.size_hint = (None, None)
         self._route = route
         self._resourcesPath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Resources'))
@@ -87,6 +91,7 @@ class Road(Widget):
                 imgTexture = imgCornerDownRight.texture
             imgTexture = self._createTexture(imgTexture)
             Rectangle(texture = imgTexture, size=(Types.ROAD_WIDTH, Types.ROAD_WIDTH), pos=(posX, posY))
+            self._screenGrid.fillArea(Point(posX, posY), Point(posX+Types.ROAD_WIDTH, posY+Types.ROAD_WIDTH))
             
     def _getCornerType(self, point1, point2, point3):
         retVal = eCorner()
@@ -132,6 +137,7 @@ class Road(Widget):
         #print "RECTANGLE: size:(width:%d, height:%d) pos=(x:%d, y:%d)" %(rectWidth, rectHeight, rectStartPosX, rectStartPosY)
         texture = self._createTexture(imgTexture, rectWidth, rectHeight)
         Rectangle(texture=texture, size=(rectWidth, rectHeight), pos=(rectStartPosX, rectStartPosY))
+        self._screenGrid.fillArea(Point(rectStartPosX, rectStartPosY), Point(rectStartPosX+rectWidth, rectStartPosY+rectHeight))
     
     def _createTexture(self, imgTexture, width = 100, height = 100):
         #texture = img.texture
@@ -164,8 +170,8 @@ class Road(Widget):
                 retVal.direction = eDirections.DIR_STANDING        
         return retVal.direction
     
-    def on_touch_down(self, touch):
-        print "collide road1!!"
-        if self.collide_point(touch.x, touch.y):
-            print "collide road2!!"
-        return Widget.on_touch_down(self, touch)
+    #def on_touch_down(self, touch):
+    #    print "collide road1!!"
+    #    if self.collide_point(touch.x, touch.y):
+    #        print "collide road2!!"
+    #    return Widget.on_touch_down(self, touch)

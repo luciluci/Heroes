@@ -11,11 +11,13 @@ from Characters.Varcolac import Varcolac
 from kivy.clock import Clock
 from kivy.uix.widget import Widget
 from Globals import Types
+from Globals.Types import Point
 from kivy.uix.stacklayout import StackLayout
 from ScreenElements.Background import Background
 from ScreenElements.Road import Road
+from ScreenElements.ScreenGrid import ScreenGrid
 from kivy.graphics import Ellipse, Color, Rectangle
-from kivy.uix.floatlayout import FloatLayout
+#from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 
 ROAD = [(0, 150), (420, 150), (420, 300), (200, 300), (200, 400), (700, 400), (700, 600)]
@@ -117,30 +119,8 @@ class bck(Widget):
             Ellipse(pos=(50,50), size=(d, d))
             Color(1, 1, 1)
 
-class Point:
-    x = -1
-    y = -1
-        
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-    
-class ScreenGrid:
-    Matrix = [[0 for x in range(Types.SCREEN_SIZE_HEIGHT+1)] for x in range(Types.SCREEN_SIZE_WIDTH+1)]
-    granularity = 1 #currenlty not used, will be used to speed up the game computations.
-    
-    def fillArea(self, fromPoint, toPoint):
-        for pointX in range(fromPoint.x, toPoint.x+1):
-            for pointY in range(fromPoint.y, toPoint.y+1):
-                self.Matrix[pointX][pointY] = 1
-    
-    def fill(self):
-        pass
-    
-    def getScreenMatrix(self):
-        return self.Matrix
 
-class GameControls(ScreenGrid):
+class GameControls():
     #holder element
     layout = None
     
@@ -153,19 +133,23 @@ class GameControls(ScreenGrid):
     lblResources = None
     lblResourcesValue = None
     
-    def __init__(self):
+    screenGrid = None
+    
+    def __init__(self, screenGrid):
         #super(GameControls, self).__init__()
         
-        self.layout = StackLayout(size=(Types.SCREEN_SIZE_WIDTH, 100), orientation="lr-bt", size_hint=(None, None))
-        self.backButton = Button(text='Back', size_hint=(.2, .1), pos_hint={'x':.01, 'y':.01})
+        self.screenGrid = screenGrid
+        
+        self.layout = StackLayout(size=(Types.SCREEN_SIZE_WIDTH, 80), orientation="lr-bt", size_hint=(None, None))
+        self.backButton = Button(text='Back', size_hint=(.1, .4), pos_hint={'x':.01, 'y':.01})
         #self.backButton.bind(on_release = self.goBack)
         
-        self.lblScore = Label(text='SCORE:', size_hint=(.1, .1))
-        self.lblScoreValue = Label(text='0', size_hint=(.1, .1))
-        self.lblLife = Label(text='LIFE:', size_hint=(.1, .1))
-        self.lblLifeValue = Label(text='100', size_hint=(.1, .1))
-        self.lblResources = Label(text='RESOURCES:', size_hint=(.1, .1))
-        self.lblResourcesValue = Label(text='100', size_hint=(.1, .1))
+        self.lblScore = Label(text='SCORE:', size_hint=(.1, .4))
+        self.lblScoreValue = Label(text='0', size_hint=(.1, .4))
+        self.lblLife = Label(text='LIFE:', size_hint=(.1, .4))
+        self.lblLifeValue = Label(text='100', size_hint=(.1, .4))
+        self.lblResources = Label(text='RESOURCES:', size_hint=(.1, .4))
+        self.lblResourcesValue = Label(text='100', size_hint=(.1, .4))
         
         
         self.layout.canvas.add(Color(.8, .7, .1, .7))
@@ -183,7 +167,7 @@ class GameControls(ScreenGrid):
         self.fill()
         
     def fill(self):
-        self.fillArea(Point(0,0), Point(Types.SCREEN_SIZE_WIDTH, 100))
+        self.screenGrid.fillArea(Point(0,0), Point(Types.SCREEN_SIZE_WIDTH, 80))
         
 
 class PlayScreen(Screen):
@@ -205,21 +189,22 @@ class PlayScreen(Screen):
     lblResourcesValue = None
     
     controls = None
-    
+    screenGrid = None
     
     def __init__(self, name):
         super(PlayScreen, self).__init__()
+        self.screenGrid = ScreenGrid()
         self.name = name
         
         self.clear_widgets()
         self.route.extend(ROAD)
                 
         self.background = Background()
-        self.road = Road(self.route)
-        self.controls = GameControls()
-        self.controls.backButton.bind(on_release = self.goBack)
         
-        print "ds"
+        self.road = Road(self.route, self.screenGrid)
+        self.controls = GameControls(self.screenGrid)
+        
+        self.controls.backButton.bind(on_release = self.goBack)
         
     def on_pre_enter(self, *args):
         Screen.on_pre_enter(self, *args)
@@ -256,7 +241,6 @@ class PlayScreen(Screen):
         
     def addVarcolac(self, dt):
         if(self._isScreenAlive() and len(self.varcolaci) < 5):
-            print "one more"
             varcolac = Varcolac(self.route)
             varcolac.setRoute(self.route)
             
@@ -267,18 +251,25 @@ class PlayScreen(Screen):
             Clock.schedule_once(self.addVarcolac, 1)
     
     def addTower(self, touch):
-        tower = Tower(touch)
+        tower = Tower(touch, self.screenGrid)
         self.add_widget(tower)               
         
     def on_touch_down(self, touch):
         bCanAddTower = True
-        if self.controls.layout.collide_point(touch.x, touch.y) == True:
-            print "colision with menu"
+        towerGridStartPoint = Point(touch.x-Tower.size_x/2, touch.y-Tower.size_y/2)
+        towerGridEndPoint   = Point(touch.x+Tower.size_x/2, touch.y+Tower.size_y/2)
+        
+        if self.screenGrid.isColliding(towerGridStartPoint, towerGridEndPoint):
+            print "WARNING! cannot built tower on other widgets"
             bCanAddTower = False
         
-        if self.road.collide_point(touch.x, touch.y) == True:
-            print "colision with road"
-            bCanAddTower = False
+        #if self.controls.layout.collide_point(touch.x, touch.y) == True:
+        #    print "colision with menu"
+        #    bCanAddTower = False
+        
+        #if self.road.collide_point(touch.x, touch.y) == True:
+        #    print "colision with road"
+        #    bCanAddTower = False
                 
         if bCanAddTower == True:
             self.addTower(touch)
