@@ -38,6 +38,7 @@ class Varcolac(Widget):
     
     def __init__(self, road):
         super(Varcolac, self).__init__()
+        
         self.pos = road[0]
         #set first checkpoint to current position. workaround for not messing up the recursivity in moveTo method
         self.goToX = road[0][0]
@@ -82,7 +83,7 @@ class Varcolac(Widget):
     
     def _move(self, dt):
         self.pos = Vector(*self.direction) + self.pos
-        self.canvas.ask_update()
+        #self.canvas.ask_update()
         return self.isMoving
     
     def setRoute(self, route):

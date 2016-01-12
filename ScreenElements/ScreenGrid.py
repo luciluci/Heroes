@@ -39,7 +39,9 @@ class ScreenGrid:
         width = len(self.Matrix)
         #height = len(self.Matrix[0])
         for pointX in range(0, width):
-            print self.Matrix[pointX][:]
+            #print self.Matrix[pointX][:]
+            f.write("\n")
+            f.write(str(self.Matrix[pointX][:]))
         f.close()
         
     def isColliding(self, fromPoint, toPoint):
