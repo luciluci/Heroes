@@ -4,12 +4,11 @@ Created on Dec 11, 2015
 @author: Lucian Apetre
 '''
 
-from Characters.Tower import Tower, TowerShadow
+from Characters.Tower import Tower, TowerShadow, TowerFactory
 from kivy.uix.screenmanager import Screen
 from kivy.uix.button import Button
 from Characters.Varcolac import Varcolac
 from kivy.clock import Clock
-from kivy.uix.widget import Widget
 from Globals import Types
 from Globals.Types import Point
 from kivy.uix.stacklayout import StackLayout
@@ -17,100 +16,12 @@ from ScreenElements.Background import Background
 from ScreenElements.Road import Road
 from ScreenElements.ScreenGrid import ScreenGrid
 from kivy.graphics import Color, Rectangle
-#from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.core.window import Window
 from functools import partial
 
 ROAD = [(0, 150), (420, 150), (420, 300), (200, 300), (200, 400), (700, 400), (700, 600)]
 
-from kivy.lang import Builder
-
-Builder.load_string(
-"""
-<Controls>
-    mScore: score
-    mLife: life
-    mGelb: gelb
-    FloatLayout:
-        Widget:
-            size_hint: None, None
-            size: 730, 100
-            pos: 30, 30
-            canvas:
-                Color:
-                    rgba: .5, .1, .1, .5
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-    Score:
-        id: score
-    Life: 
-        id: life
-    Gelb:
-        id: gelb
-<Score>
-    size: 150, 50
-    pos: 70, 70
-    canvas:
-        Color:
-            rgba: .1, .5, .1, .5
-        Rectangle:
-            pos: self.pos
-            size: self.size
-    Label:
-        pos: 70, 45
-        text: "Score:"
-    Label:
-        pos: 120, 45
-        text: str(root.score)
-        
-<Life>
-    size: 150, 50
-    pos: 230, 70
-    canvas:
-        Color:
-            rgba: .1, .5, .1, .5
-        Rectangle:
-            pos: self.pos
-            size: self.size
-    Label:
-        pos: 230, 45
-        text: "LIFE:"
-    Label:
-        pos: 260, 45
-        text: str(root.val)
-        
-<Gelb>
-    size: 150, 50
-    pos: 390, 70
-    canvas:
-        Color:
-            rgba: .1, .5, .1, .5
-        Rectangle:
-            pos: self.pos
-            size: self.size
-    Label:
-        pos: 390, 45
-        text: "GELB:"
-    Label:
-        pos: 430, 45
-        text: str(root.amount)
-""")
-
-
-class Controls(Widget):
-    pass
-
-class Score(Widget):
-    score = 1
-
-class Life(Widget):
-    val = 100
-
-class Gelb(Widget):
-    amount = 1000
-    
 class GameControls():
     #holder element
     layout = None
@@ -128,13 +39,10 @@ class GameControls():
     screenGrid = None
     
     def __init__(self, screenGrid):
-        #super(GameControls, self).__init__()
-        
         self.screenGrid = screenGrid
         
         self.layout = StackLayout(size=(Types.SCREEN_SIZE_WIDTH, 80), orientation="lr-bt", size_hint=(None, None))
         self.backButton = Button(text='Back', size_hint=(.1, .4), pos_hint={'x':.01, 'y':.01})
-        #self.backButton.bind(on_release = self.goBack)
         
         self.lblScore = Label(text='SCORE:', size_hint=(.1, .4))
         self.lblScoreValue = Label(text='0', size_hint=(.1, .4))
@@ -149,7 +57,6 @@ class GameControls():
         self.layout.canvas.add(Rectangle(size=self.layout.size))
         
         self.layout.add_widget(self.backButton)
-        
         self.layout.add_widget(self.lblScore)
         self.layout.add_widget(self.lblScoreValue)
         self.layout.add_widget(self.lblLife)
@@ -184,11 +91,19 @@ class PlayScreen(Screen):
     controls = None
     screenGrid = None
     
+    #TowerShadow
+    towerShadow = None
+    bTowerShadowOn = False
+    _towerFactory = None
+    
+    
     def __init__(self, name):
         super(PlayScreen, self).__init__()
-        self.screenGrid = ScreenGrid()
-        self.name = name
         
+        self.screenGrid = ScreenGrid()
+        self._towerFactory = TowerFactory(self.screenGrid)
+        self._towerFactory.setMaxTowers(Types.NUMBER_OF_TOWERS)
+        self.name = name
         
         self.clear_widgets()
         self.route.extend(ROAD)
@@ -199,7 +114,7 @@ class PlayScreen(Screen):
         self.controls = GameControls(self.screenGrid)
         
         self.controls.backButton.bind(on_release = self.goBack)
-        self.controls.createTower.bind(on_release = self.createTowerClick)
+        self.controls.createTower.bind(on_release = self.createTowerShadowClick)
         
     def on_pre_enter(self, *args):
         Screen.on_pre_enter(self, *args)
@@ -207,15 +122,10 @@ class PlayScreen(Screen):
         
     def on_enter(self, *args):
         self.screenAlive = True
-
-        #self.menuBar = StackLayout(spacing=[10, 10])
-        #self.menuBar.add_widget(self.backButton)
         
         self.add_widget(self.background)
         self.add_widget(self.road)
-        #self.add_widget(self.menuBar)
         self.add_widget(self.controls.layout)
-        #self.add_widget(self.layout)
 
         #throw first varcolac in the game
         Clock.schedule_once(self.addVarcolac, 0)
@@ -247,41 +157,64 @@ class PlayScreen(Screen):
             Clock.schedule_once(self.addVarcolac, 1)
     
     def addTower(self, touch):
-        tower = Tower(touch, self.screenGrid)
-        self.add_widget(tower)               
+        
+        #tower = Tower(touch, self.screenGrid)
+        tower = self._towerFactory.getTower()
+        if tower:
+            tower.placeAt(touch.x, touch.y)
+            self.add_widget(tower)
+        self.bTowerShadowOn = False               
         
     def on_touch_down(self, touch):
         bCanAddTower = True
-        towerGridStartPoint = Point(touch.x-Tower.size_x/2, touch.y-Tower.size_y/2)
-        towerGridEndPoint   = Point(touch.x+Tower.size_x/2, touch.y+Tower.size_y/2)
+        
+        towerGridStartPoint = Point(self._correctPosition(touch.x)-Tower.size_x/2, self._correctPosition(touch.y)-Tower.size_y/2)
+        towerGridEndPoint   = Point(self._correctPosition(touch.x)+Tower.size_x/2, self._correctPosition(touch.y)+Tower.size_y/2)
         
         if self.screenGrid.isColliding(towerGridStartPoint, towerGridEndPoint):
-            print "WARNING! cannot built tower on other widgets"
+            #print "WARNING! cannot built tower on other widgets"
             bCanAddTower = False
 
         if bCanAddTower == True:
-            self.addTower(touch)
+            towerPosX = self._correctPosition(touch.x)
+            towerPosY = self._correctPosition(touch.y)
+            
+            self.addTower(Point(towerPosX, towerPosY))
+            self.remove_widget(self.towerShadow)
+            del self.towerShadow
         return Screen.on_touch_down(self, touch)
     
     def _isScreenAlive(self):
         return self.screenAlive
         
-    def createTowerClick(self, caller):
-        pos = Point(Window.mouse_pos[0], Window.mouse_pos[1])
-        shadow = TowerShadow()
-        self.add_widget(shadow)
-        Clock.schedule_interval(partial(self.moveTower, shadow), 0.05)
+    def createTowerShadowClick(self, caller):
+        self.towerShadow = TowerShadow((Window.mouse_pos[0], Window.mouse_pos[1]))
+        self.add_widget(self.towerShadow)
+        self.bTowerShadowOn = True
+        Clock.schedule_interval(partial(self.moveTower, self.towerShadow), 0.05)
         
     def moveTower(self, shadow, dt):
-        posX = Window.mouse_pos[0]
-        posY = Window.mouse_pos[1]
-        shadow.changePosition(posX, posY)
-        #shadow.updatePosition(posX, posY)
-        if self.screenGrid.isColliding(Point(posX-shadow.width/2, posY-shadow.height/2), Point(posX+shadow.width/2, posY+shadow.height/2)):
+        if self._isScreenAlive() == False or self.bTowerShadowOn == False:
+            return False
+        
+        towerShadowPosX = self._correctPosition(Window.mouse_pos[0])
+        towerShadowPosY = self._correctPosition(Window.mouse_pos[1])
+        
+        shadow.changePosition(towerShadowPosX, towerShadowPosY)
+        
+        if self.screenGrid.isColliding(Point(towerShadowPosX-shadow.width/2, towerShadowPosY-shadow.height/2), Point(towerShadowPosX+shadow.width/2, towerShadowPosY+shadow.height/2)):
             shadow.changeRed(0.2)
-            print "collision"
+            #print "WARNING! position unavailable"
         else:
             shadow.changeRed(1)
-            
-        #shadow.pos = (Window.mouse_pos[0], Window.mouse_pos[1])
-        #print Window.mouse_pos
+        
+        return True
+    
+    #used to detect nearest grid point
+    def _correctPosition(self, pos):
+        correctedPos = 0
+        if pos % Types.SCREEN_MATRIX_GRANULARITY <= Types.SCREEN_MATRIX_GRANULARITY / 2:
+            correctedPos = int(pos / Types.SCREEN_MATRIX_GRANULARITY) * Types.SCREEN_MATRIX_GRANULARITY
+        else:
+            correctedPos = int(pos / Types.SCREEN_MATRIX_GRANULARITY) * Types.SCREEN_MATRIX_GRANULARITY + 1
+        return correctedPos

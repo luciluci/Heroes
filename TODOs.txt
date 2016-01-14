@@ -1,8 +1,11 @@
 * Create Towers:
-	* Placement restrictions
-	* Tower cannnot be placed on Road
-	* Tower cannot be placed on game board
+	* Placement restrictions - DONE
+	* Tower cannnot be placed on Road - DONE
+	* Tower cannot be placed on game board - DONE
 	* Add image to tower
+* Add grid magnet
+* Change mouse pointer to normal when over game controls
+* Make tower shoot projectils
 * Create also Tower factory so we cannot add more than N Towers
 * Add multiple Tower types with more damage posibilities and more skins
 * Add images to Varcolacs
@@ -13,12 +16,14 @@
 * Correct Varcolac display on the Road by taking in consideration Varcolac size
 
 INVESTIGATE:
-* Convert the game board to grid - can solve many problems
+* Convert the game board to grid - can solve many problems - DONE
 
 FILIP:
+* Create class taht will hold the wave properties
 * Create xml reader for screen
 	* will include: nr of Varcolaci that will be generated, Road map [(x1, y1), (x2, y2)...]
 	* background images and corner images
+	* everything that will be generated on a wave
 * Create xml schema validator
 * Create Tower factory and Varcolac Factory(Read factory pattern)
 

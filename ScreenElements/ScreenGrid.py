@@ -7,22 +7,20 @@ Created on Jan 11, 2016
 from Globals import Types
 
 class ScreenGrid:
-    granularity = 0#screen greed granularity
     maxWidth = 0
     maxHeight = 0
     Matrix = []
     
     def __init__(self):
-        self.granularity = 8#screen greed granularity
-        self.maxWidth = Types.SCREEN_SIZE_WIDTH / self.granularity
-        self.maxHeight = Types.SCREEN_SIZE_HEIGHT / self.granularity
+        self.maxWidth = Types.SCREEN_SIZE_WIDTH / Types.SCREEN_MATRIX_GRANULARITY
+        self.maxHeight = Types.SCREEN_SIZE_HEIGHT / Types.SCREEN_MATRIX_GRANULARITY
         self.Matrix = [[0 for x in range(self.maxHeight)] for x in range(self.maxWidth)]
     
     def fillArea(self, fromPoint, toPoint):
-        fromX = int(fromPoint.x / self.granularity)
-        toX = int(toPoint.x / self.granularity)
-        fromY = int(fromPoint.y / self.granularity)
-        toY = int(toPoint.y / self.granularity)
+        fromX = int(fromPoint.x / Types.SCREEN_MATRIX_GRANULARITY)
+        toX = int(toPoint.x / Types.SCREEN_MATRIX_GRANULARITY)
+        fromY = int(fromPoint.y / Types.SCREEN_MATRIX_GRANULARITY)
+        toY = int(toPoint.y / Types.SCREEN_MATRIX_GRANULARITY)
         for pointX in range(fromX , toX):
             for pointY in range(fromY, toY):
                 self.Matrix[pointX][pointY] = 1
@@ -46,16 +44,16 @@ class ScreenGrid:
         
     def isColliding(self, fromPoint, toPoint):
         retVal = False
-        fromX = int(fromPoint.x / self.granularity)
-        toX = int(toPoint.x / self.granularity)
-        fromY = int(fromPoint.y / self.granularity)
-        toY = int(toPoint.y / self.granularity)
+        fromX = int(fromPoint.x / Types.SCREEN_MATRIX_GRANULARITY)
+        toX = int(toPoint.x / Types.SCREEN_MATRIX_GRANULARITY)
+        fromY = int(fromPoint.y / Types.SCREEN_MATRIX_GRANULARITY)
+        toY = int(toPoint.y / Types.SCREEN_MATRIX_GRANULARITY)
         
         if toX > self.maxWidth or fromX < 0:
-            print "WARNING! out of screen bounds"
+            #print "WARNING! out of screen bounds"
             return True
         if toY > self.maxHeight or fromY < 0:
-            print "WARNING! out of screen bounds"
+            #print "WARNING! out of screen bounds"
             return True
         
         for pointX in range(fromX , toX):

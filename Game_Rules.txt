@@ -10,4 +10,6 @@ Damage types:   Life damage: gives -1 live on every round
 
 				Poison (on every round the poison takes 1p of life from the invected warewolf)
 				Poison can be used only from Medium difficulty up
-				  
+				
+WAVE: Wave represents a level, on a wave we need to place the towers and wait for the Varcolacs to attack
+The waves should have a specific configuration like Varcolacs speed, number of towers and so on 				  
