@@ -8,12 +8,14 @@ Created on Jan 5, 2016
 from kivy.graphics import Ellipse, Color
 from kivy.uix.widget import Widget
 from Globals.Types import Point
+from Globals import Types
 from kivy.properties import NumericProperty
 
 class TowerFactory(object):
     _instance = None
     _towers = []
-    _maxTowers = 0
+    _towersMax = 0
+    _towersCount = 0
     _screenGreed = None
     
     def __init__(self, screenGrid):
@@ -27,47 +29,56 @@ class TowerFactory(object):
         return cls._instance
     
     def setMaxTowers(self, nr):
-        self._maxTowers = nr
+        self._towersMax = nr
         for idx in range(0, nr):
             self._towers.append(Tower(self._screenGreed))
 
     def getTower(self):
         retVal = None
-        if self._maxTowers > 0:
-            self._maxTowers -= 1
+        if self._towersCount < self._towersMax:
+            self._towersCount += 1
             retVal = self._towers.pop()
         else:
             print "WARNING! no more towers"
         return retVal
     
     def releaseTower(self, tower):
-        self._maxTowers += 1
+        self._towersCount -= 1
         self._towers.append(tower)
+        
+    def getBuildedTowers(self):
+        return self._towersCount
         
     
 class Tower(Widget):
     size_x = 30
     size_y = 30
     _screenGrid = None
+    _posX = 0
+    _posY = 0
+    _maxPosX = 0
+    _maxPosY = 0
     
     def __init__(self, screenGrid):
         super(Tower, self).__init__()
-        
         self._screenGrid = screenGrid
-        #with self.canvas:
-        #    Color(1., 0, 0)
-        #    Ellipse(pos=(touch.x - self.size_x / 2, touch.y - self.size_y / 2), size=(self.size_x, self.size_y))
-        #    Color(1, 1, 1)
-        
-        #screenGrid.fillArea(Point(touch.x - self.size_x / 2, touch.y - self.size_y / 2), Point(touch.x + self.size_x / 2, touch.y + self.size_y / 2))
         
     def placeAt(self, x, y):
+        self._posX = x - self.size_x / 2
+        self._posY = y - self.size_y / 2
+        self._maxPosX = x + self.size_x / 2
+        self._maxPosY = y + self.size_y / 2
+        
         with self.canvas:
             Color(1., 0, 0)
-            Ellipse(pos=(x - self.size_x / 2, y - self.size_y / 2), size=(self.size_x, self.size_y))
+            Ellipse(pos=(self._posX, self._posY), size=(self.size_x, self.size_y))
             Color(1, 1, 1)
         
-        self._screenGrid.fillArea(Point(x - self.size_x / 2, y - self.size_y / 2), Point(x + self.size_x / 2, y + self.size_y / 2))
+        self._screenGrid.fillArea(Point(self._posX, self._posY), Point(self._maxPosX, self._maxPosY))
+
+    def remove(self):
+        self.canvas.clear()
+        self._screenGrid.unfillArea(Point(self._posX, self._posY), Point(self._maxPosX, self._maxPosY))
         
 class TowerShadow(Widget):
     red = NumericProperty(0)

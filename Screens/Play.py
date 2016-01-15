@@ -91,10 +91,11 @@ class PlayScreen(Screen):
     controls = None
     screenGrid = None
     
-    #TowerShadow
+    #Towers
     towerShadow = None
     bTowerShadowOn = False
     _towerFactory = None
+    _towers = []
     
     
     def __init__(self, name):
@@ -138,10 +139,18 @@ class PlayScreen(Screen):
         self.clearMenuBar()
         self.screenAlive = False
         self.screenGrid.displayScreenMatrix()
+        
         while len(self.varcolaci) > 0:
             varcolac = self.varcolaci.pop()
             varcolac.stopMovement()
             self.remove_widget(varcolac)
+        
+        while len(self._towers) > 0:
+            tower = self._towers.pop()
+            tower.remove()
+            self.remove_widget(tower)
+            self._towerFactory.releaseTower(tower)    
+        
         self.manager.current = 'menu'
         self.clear_widgets()
         
@@ -157,13 +166,12 @@ class PlayScreen(Screen):
             Clock.schedule_once(self.addVarcolac, 1)
     
     def addTower(self, touch):
-        
-        #tower = Tower(touch, self.screenGrid)
         tower = self._towerFactory.getTower()
         if tower:
             tower.placeAt(touch.x, touch.y)
             self.add_widget(tower)
-        self.bTowerShadowOn = False               
+            self._towers.append(tower)
+        self.bTowerShadowOn = False
         
     def on_touch_down(self, touch):
         bCanAddTower = True

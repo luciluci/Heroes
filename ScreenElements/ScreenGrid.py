@@ -17,17 +17,20 @@ class ScreenGrid:
         self.Matrix = [[0 for x in range(self.maxHeight)] for x in range(self.maxWidth)]
     
     def fillArea(self, fromPoint, toPoint):
+        self.fill(fromPoint, toPoint, 1)
+        #self.displayScreenMatrix()
+        
+    def unfillArea(self, fromPoint, toPoint):
+        self.fill(fromPoint, toPoint, 0)
+    
+    def fill(self, fromPoint, toPoint, value):
         fromX = int(fromPoint.x / Types.SCREEN_MATRIX_GRANULARITY)
         toX = int(toPoint.x / Types.SCREEN_MATRIX_GRANULARITY)
         fromY = int(fromPoint.y / Types.SCREEN_MATRIX_GRANULARITY)
         toY = int(toPoint.y / Types.SCREEN_MATRIX_GRANULARITY)
         for pointX in range(fromX , toX):
             for pointY in range(fromY, toY):
-                self.Matrix[pointX][pointY] = 1
-        #self.displayScreenMatrix()
-    
-    def fill(self):
-        pass
+                self.Matrix[pointX][pointY] = value
     
     def getScreenMatrix(self):
         return self.Matrix
@@ -63,3 +66,9 @@ class ScreenGrid:
                     break
                 
         return retVal
+    
+    def reset(self):
+        for pointX in range(0 , self.maxWidth):
+            for pointY in range(0, self.maxHeight):
+                self.Matrix[pointX][pointY] = 0
+        

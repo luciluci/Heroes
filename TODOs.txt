@@ -3,10 +3,10 @@
 	* Tower cannnot be placed on Road - DONE
 	* Tower cannot be placed on game board - DONE
 	* Add image to tower
-* Add grid magnet
+* Add grid magnet - DONE
 * Change mouse pointer to normal when over game controls
 * Make tower shoot projectils
-* Create also Tower factory so we cannot add more than N Towers
+* Create also Tower factory so we cannot add more than N Towers - DONE
 * Add multiple Tower types with more damage posibilities and more skins
 * Add images to Varcolacs
 * Create animated Varcolacs
