@@ -9,7 +9,6 @@ from kivy.graphics import Color, Rectangle
 from kivy.uix.widget import Widget
 from Globals import Types
 from Globals.Types import Point
-from ScreenElements.ScreenGrid import ScreenGrid
 import math
 
 import os

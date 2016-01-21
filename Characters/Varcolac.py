@@ -7,18 +7,26 @@ from kivy.uix.widget import Widget
 from kivy.vector import Vector
 from kivy.lang import Builder
 from Globals import Types
+from kivy.properties import NumericProperty
+from kivy.graphics import Color, Rectangle, Ellipse
 
 
 Builder.load_string("""
 <Varcolac>:
     size: 30, 30
-    canvas.before:
-        Color:
-            rgba: 1, 1, 1, 1 
     canvas:
+        Color:
+            rgba: 1, 1, 1, 1
         Ellipse:
             pos: self.pos
             size: 30, 30
+        Color:
+            rgba: 0, 1, 1, 1
+        Rectangle:
+            size: 30 * self._life/100, 3
+            pos: self.x, self.y + 33
+        Color:
+            rgba: 1, 1, 1, 1
 """)
 
 class Varcolac(Widget):
@@ -34,6 +42,9 @@ class Varcolac(Widget):
     route = []
     routeIndex = 0
     
+    
+    _life = NumericProperty(100)
+    
    # image = Image((os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Resources')))+"robot_right.gif")
     
     def __init__(self, road):
@@ -43,9 +54,20 @@ class Varcolac(Widget):
         #set first checkpoint to current position. workaround for not messing up the recursivity in moveTo method
         self.goToX = road[0][0]
         self.goToY = road[0][1]
+        self.bind(_life = self._redrawLife)
+        #self._life = 100
         
         #ResourcesPath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Resources'))
         #self.image = Image(ResourcesPath+"\\robot_right.gif")
+        
+    def _redrawLife(self, *args):
+        self.canvas.clear()
+        with self.canvas.before:
+            Color(1, 1, 1)
+            Ellipse(pos=self.pos, size=(30,30))
+            Color(0, 1, 1)
+            Rectangle(pos=(self.x, self.y + 30), size=(30 * self._life/100, 5))
+            Color(1, 1, 1)
 
     def stopMovement(self):
         #print "varcolacul s-a oprit"

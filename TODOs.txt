@@ -1,19 +1,23 @@
+* Make tower shoot projectils
+* Create button on screen that distroys a specific tower
+* Count towers
 * Create Towers:
 	* Placement restrictions - DONE
 	* Tower cannnot be placed on Road - DONE
 	* Tower cannot be placed on game board - DONE
-	* Add image to tower
+	* Add image to tower - DONE
 * Add grid magnet - DONE
-* Change mouse pointer to normal when over game controls
-* Make tower shoot projectils
+* Change mouse pointer to normal when over game controls - must investigtate
 * Create also Tower factory so we cannot add more than N Towers - DONE
 * Add multiple Tower types with more damage posibilities and more skins
 * Add images to Varcolacs
 * Create animated Varcolacs
 * Create screens design
 * Add all Varcolacs in a Varcolac factory and load them on game start not on screen load
-* Add different images for cornered Road
+* Re-think how the road is drawn
 * Correct Varcolac display on the Road by taking in consideration Varcolac size
+
+REFACTOR: Find a way to use only Tower instead of TowerShadow
 
 INVESTIGATE:
 * Convert the game board to grid - can solve many problems - DONE
