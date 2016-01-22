@@ -84,7 +84,9 @@ class Tower(Widget):
     _attackRadius = 200
     
     _bShooting = BooleanProperty(False)
+    _varcolac = None
     
+        
     def __init__(self, screenGrid):
         super(Tower, self).__init__()
         self._screenGrid = screenGrid
@@ -118,6 +120,9 @@ class Tower(Widget):
     def _shoot(self, *args):
         if self._bShooting == True:
             self._startShooting()
+            
+    def _stopShooting(self):
+        self._bShooting = False
     
     def _startShooting(self):
         Clock.schedule_interval(self._shootProjectile, 0.5)
@@ -132,7 +137,11 @@ class Tower(Widget):
     def _animateProjectile(self, instance, toPosition):
         animation = Animation(pos=toPosition)
         animation.start(instance)
+        
         animation.bind(on_complete = self._dezanimateProjectile)
+        
+        self._drainLife(self._varcolac)
+        #self._varcolac.drainLife()
         
     def _dezanimateProjectile(self, *args):
         projectile = args[1]
@@ -140,9 +149,15 @@ class Tower(Widget):
         projectile.erase()
         del projectile
         
+        
     def getAttackRadius(self):
         return self._attackRadius
     
+    def setCurrentVarcolac(self, varcolac):
+        if self._varcolac != varcolac:
+            print "change focused varcolac"
+            self._varcolac = varcolac
+            
             
 class TowerShadow(Widget):
     red = NumericProperty(0)
@@ -176,4 +191,7 @@ class TowerShadow(Widget):
             self.tower = Rectangle(pos=self.pos, size=self.size_max, source=self.ResourcesPath+"\\Tower_63x100.png")
          
     def changeRed(self, red):
-        self.red = red        
+        self.red = red
+        
+    def _drainLife(self, varcolac):
+        

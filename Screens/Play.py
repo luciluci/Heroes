@@ -151,7 +151,7 @@ class PlayScreen(Screen):
         
     def addVarcolac(self, dt):
         if(self._isScreenAlive() and len(self._varcolacs) < 5):
-            varcolac = Varcolac(self.route)
+            varcolac = Varcolac(self.route, "Varcolac"+str(len(self._varcolacs)))
             varcolac.setRoute(self.route)
             
             self.add_widget(varcolac)
@@ -235,10 +235,10 @@ class PlayScreen(Screen):
         bVarcolacFound = False
         for varcolac in self._varcolacs:
             if self._getDistance(Point(varcolac.x, varcolac.y), Point(tower.posX, tower.posY)) <= tower.getAttackRadius():
+                tower.setCurrentVarcolac(varcolac)
                 tower.setShootToPosition(varcolac.pos)
                 tower.setIsShooting(True)
                 bVarcolacFound = True
-                varcolac._life = 50
                 #this break gives us the control on choosing the varcolac to be shot
                 #breaking here the first one is selected
                 break
