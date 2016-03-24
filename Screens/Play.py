@@ -150,7 +150,7 @@ class PlayScreen(Screen):
         self.manager.current = 'menu'
         
     def addVarcolac(self, dt):
-        if(self._isScreenAlive() and len(self._varcolacs) < 5):
+        if(self._isScreenAlive() and len(self._varcolacs) < Types.NUMBER_OF_VARCOLACS):
             varcolac = Varcolac(self.route, "Varcolac"+str(len(self._varcolacs)))
             varcolac.setRoute(self.route)
             
@@ -230,6 +230,7 @@ class PlayScreen(Screen):
     def _scanForVarcolacsTowerCollision(self, tower):
         if len(self._varcolacs) > 0:
             Clock.schedule_interval(partial(self._detectNearVarcolacs, tower), 0.2)
+            Clock.schedule_interval(self._detectDeadVarcolacs, 0.2)
             
     def _detectNearVarcolacs(self, tower, delta):
         bVarcolacFound = False
@@ -246,5 +247,10 @@ class PlayScreen(Screen):
             tower.setIsShooting(False)
             
                 #tower.startShooting(varcolac.pos)
+    def _detectDeadVarcolacs(self, delta):
+        for varcolac in self._varcolacs:
+            if varcolac.getLife() <= 0:
+                self.remove_widget(varcolac)
+                self._varcolacs.remove(varcolac)
         
             

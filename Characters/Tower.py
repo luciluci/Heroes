@@ -125,30 +125,32 @@ class Tower(Widget):
         self._bShooting = False
     
     def _startShooting(self):
-        Clock.schedule_interval(self._shootProjectile, 0.5)
+        Clock.schedule_interval(self._shootProjectile, 1)
         
     def _shootProjectile(self, dt):
         position = self.getShootToPosition()
         proj = Projectile(pos=(self.posX + self._projectile_x, self.posY + self._projectile_y), size = (10, 10))
         self.add_widget(proj)
         self._animateProjectile(proj, position)
+        #flag Varcolag for draining life when the projectile hits it
+        #self._varcolac.flagStartShooting()
+        #TO DO
         return self._bShooting
         
+    #create projectile and start "shooting"
     def _animateProjectile(self, instance, toPosition):
         animation = Animation(pos=toPosition)
         animation.start(instance)
-        
         animation.bind(on_complete = self._dezanimateProjectile)
-        
-        self._drainLife(self._varcolac)
-        #self._varcolac.drainLife()
-        
+
+    #clears the projectile that was just shot
     def _dezanimateProjectile(self, *args):
         projectile = args[1]
         self.remove_widget(projectile)
         projectile.erase()
         del projectile
-        
+        self._varcolac.drainLife()
+        #drain life from the flaged Varcolac
         
     def getAttackRadius(self):
         return self._attackRadius
@@ -157,7 +159,10 @@ class Tower(Widget):
         if self._varcolac != varcolac:
             print "change focused varcolac"
             self._varcolac = varcolac
-            
+    
+    def _drainLife(self, varcolac):
+        varcolac.drainLife()
+        print "TO DO"
             
 class TowerShadow(Widget):
     red = NumericProperty(0)
@@ -192,6 +197,3 @@ class TowerShadow(Widget):
          
     def changeRed(self, red):
         self.red = red
-        
-    def _drainLife(self, varcolac):
-        

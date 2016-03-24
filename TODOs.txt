@@ -1,3 +1,4 @@
+* Correct drainLife action 
 * Make tower shoot projectils
 * Create button on screen that distroys a specific tower
 * Count towers

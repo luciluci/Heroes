@@ -108,5 +108,8 @@ class Varcolac(Widget):
     
     def drainLife(self):
         self._life -= self._lifeDecayFactor
+        
+    def getLife(self):
+        return self._life
 
         
