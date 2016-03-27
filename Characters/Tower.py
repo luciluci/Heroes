@@ -13,6 +13,7 @@ from kivy.animation import Animation
 from kivy.clock import Clock
 from functools import partial
 import os
+from Globals import Types
 
 class TowerFactory(object):
     _instance = None
@@ -80,6 +81,8 @@ class Tower(Widget):
     #projectile 
     _projectile_x = 20
     _projectile_y = 70
+    #projectiles that currently shooting the target
+    _projectilesShooting = 0
     
     _attackRadius = 200
     
@@ -139,9 +142,10 @@ class Tower(Widget):
         
     #create projectile and start "shooting"
     def _animateProjectile(self, instance, toPosition):
-        animation = Animation(pos=toPosition)
+        animation = Animation(pos=toPosition, duration=Types.PROJECTILE_DURATION)
         animation.start(instance)
         animation.bind(on_complete = self._dezanimateProjectile)
+        self._projectilesShooting += 1
 
     #clears the projectile that was just shot
     def _dezanimateProjectile(self, *args):
@@ -150,7 +154,7 @@ class Tower(Widget):
         projectile.erase()
         del projectile
         self._varcolac.drainLife()
-        #drain life from the flaged Varcolac
+        self._projectilesShooting -= 1
         
     def getAttackRadius(self):
         return self._attackRadius
@@ -163,6 +167,9 @@ class Tower(Widget):
     def _drainLife(self, varcolac):
         varcolac.drainLife()
         print "TO DO"
+        
+    def hasTowerFinishedShooting(self):
+        return True if self._projectilesShooting == 0 else False
             
 class TowerShadow(Widget):
     red = NumericProperty(0)

@@ -230,27 +230,20 @@ class PlayScreen(Screen):
     def _scanForVarcolacsTowerCollision(self, tower):
         if len(self._varcolacs) > 0:
             Clock.schedule_interval(partial(self._detectNearVarcolacs, tower), 0.2)
-            Clock.schedule_interval(self._detectDeadVarcolacs, 0.2)
             
     def _detectNearVarcolacs(self, tower, delta):
         bVarcolacFound = False
         for varcolac in self._varcolacs:
             if self._getDistance(Point(varcolac.x, varcolac.y), Point(tower.posX, tower.posY)) <= tower.getAttackRadius():
-                tower.setCurrentVarcolac(varcolac)
-                tower.setShootToPosition(varcolac.pos)
-                tower.setIsShooting(True)
-                bVarcolacFound = True
-                #this break gives us the control on choosing the varcolac to be shot
-                #breaking here the first one is selected
-                break
+                if tower.hasTowerFinishedShooting():
+                    tower.setCurrentVarcolac(varcolac)
+                    tower.setShootToPosition(varcolac.pos)
+                    tower.setIsShooting(True)
+                    bVarcolacFound = True
+                    #this break gives us the control on choosing the varcolac to be shot
+                    #breaking here the first one is selected
+                    break
         if bVarcolacFound == False:
             tower.setIsShooting(False)
-            
-                #tower.startShooting(varcolac.pos)
-    def _detectDeadVarcolacs(self, delta):
-        for varcolac in self._varcolacs:
-            if varcolac.getLife() <= 0:
-                self.remove_widget(varcolac)
-                self._varcolacs.remove(varcolac)
         
             

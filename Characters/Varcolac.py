@@ -9,7 +9,11 @@ from kivy.lang import Builder
 from Globals import Types
 from kivy.properties import NumericProperty
 from kivy.graphics import Color, Rectangle, Ellipse
+from enum import Enum
 
+class VarcolacEvents(Enum):
+    NoEvent = 0
+    VarcolacDead = 1
 
 class Varcolac(Widget):
     
