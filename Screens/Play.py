@@ -9,7 +9,7 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.button import Button
 from Characters.Varcolac import Varcolac
 from kivy.clock import Clock
-from Globals import Types
+from Globals import Types, Observer
 from Globals.Types import Point
 from kivy.uix.stacklayout import StackLayout
 from ScreenElements.Background import Background
@@ -20,6 +20,7 @@ from kivy.uix.label import Label
 from kivy.core.window import Window
 from functools import partial
 import math
+from Globals.Subject import Subject, gWatchdog
 
 ROAD = [(0, 150), (420, 150), (420, 300), (200, 300), (200, 400), (700, 400), (700, 600)]
 
@@ -73,7 +74,9 @@ class GameControls():
         
 
 class PlayScreen(Screen):
-
+    
+    #__metaclass__ = MetaclassScreenObserver
+    
     labirinth = None
     route = []
     _varcolacs = []
@@ -97,7 +100,7 @@ class PlayScreen(Screen):
     bTowerShadowOn = False
     _towerFactory = None
     _towers = []
-    
+
     def __init__(self, name):
         super(PlayScreen, self).__init__()
         
@@ -116,6 +119,9 @@ class PlayScreen(Screen):
         
         self.controls.btnGoBack.bind(on_release = self.goBack)
         self.controls.btnCreateTower.bind(on_release = self.createTowerShadowClick)
+        
+        gWatchdog.attach(self)
+        
         
     def on_pre_enter(self, *args):
         Screen.on_pre_enter(self, *args)
@@ -246,4 +252,5 @@ class PlayScreen(Screen):
         if bVarcolacFound == False:
             tower.setIsShooting(False)
         
-            
+    def update(self):
+        print "update screen"

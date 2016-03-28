@@ -4,6 +4,8 @@ Created on Dec 15, 2015
 @author: Lucian Apetre
 '''
 
+from enum import Enum
+
 FRAME_REFRESH_RATE = 1.0/50
 
 SCREEN_SIZE_WIDTH = 800
@@ -25,4 +27,7 @@ class Point:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-    
+        
+class VarcolacEvents(Enum):
+    NoEvent = 0
+    VarcolacDead = 1    

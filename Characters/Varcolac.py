@@ -9,11 +9,8 @@ from kivy.lang import Builder
 from Globals import Types
 from kivy.properties import NumericProperty
 from kivy.graphics import Color, Rectangle, Ellipse
-from enum import Enum
-
-class VarcolacEvents(Enum):
-    NoEvent = 0
-    VarcolacDead = 1
+from Globals.Subject import gWatchdog
+from Globals.Types import VarcolacEvents
 
 class Varcolac(Widget):
     
@@ -112,6 +109,8 @@ class Varcolac(Widget):
     
     def drainLife(self):
         self._life -= self._lifeDecayFactor
+        if self._life < 1:
+            gWatchdog.setEvent(VarcolacEvents.VarcolacDead)
         
     def getLife(self):
         return self._life
