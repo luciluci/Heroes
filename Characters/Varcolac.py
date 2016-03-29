@@ -12,6 +12,7 @@ from kivy.graphics import Color, Rectangle, Ellipse
 from Globals.Subject import gWatchdog
 from Globals.Types import VarcolacEvents
 
+
 class Varcolac(Widget):
     
     direction_x = 1
@@ -27,6 +28,7 @@ class Varcolac(Widget):
     _life = 100
     _lifeDecayFactor = 30
     _id = -1
+    gVarcolacIndex = 0
     
     name = ""
     #image = Image((os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Resources')))+"robot_right.gif")
@@ -50,7 +52,8 @@ class Varcolac(Widget):
             Color(1, 1, 1)
             
         self.bind(pos=self.update)
-        Varcolac._id += 1
+        self._id = Varcolac.gVarcolacIndex
+        Varcolac.gVarcolacIndex += 1
             
     def update(self, *args):
         self.canvas.clear()
