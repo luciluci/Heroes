@@ -20,7 +20,7 @@ from kivy.uix.label import Label
 from kivy.core.window import Window
 from functools import partial
 import math
-from Globals.Subject import Subject, gWatchdog
+from Globals.Subject import gWatchdog
 
 ROAD = [(0, 150), (420, 150), (420, 300), (200, 300), (200, 400), (700, 400), (700, 600)]
 
@@ -252,5 +252,5 @@ class PlayScreen(Screen):
         if bVarcolacFound == False:
             tower.setIsShooting(False)
         
-    def update(self):
-        print "update screen"
+    def update(self, id):
+        print "deleting varcolac" + str(id)

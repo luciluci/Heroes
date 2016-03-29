@@ -26,6 +26,7 @@ class Varcolac(Widget):
     routeIndex = 0
     _life = 100
     _lifeDecayFactor = 30
+    _id = -1
     
     name = ""
     #image = Image((os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Resources')))+"robot_right.gif")
@@ -49,6 +50,7 @@ class Varcolac(Widget):
             Color(1, 1, 1)
             
         self.bind(pos=self.update)
+        Varcolac._id += 1
             
     def update(self, *args):
         self.canvas.clear()
@@ -110,6 +112,7 @@ class Varcolac(Widget):
     def drainLife(self):
         self._life -= self._lifeDecayFactor
         if self._life < 1:
+            gWatchdog.setVarcolacId(self._id)
             gWatchdog.setEvent(VarcolacEvents.VarcolacDead)
         
     def getLife(self):

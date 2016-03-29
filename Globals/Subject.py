@@ -23,12 +23,11 @@ class Subject:
             view.update()
             
 class Watchdog(object):
-    
     _instance = None
     
     _observers = []
     _event = VarcolacEvents.NoEvent
-    
+    _id = -1
     
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
@@ -43,8 +42,11 @@ class Watchdog(object):
         self._event = evt
         self.notify()
         
+    def setVarcolacId(self, id):
+        self._id = id
+        
     def notify(self):
         for view in self._observers: 
-            view.update()
+            view.update(self._id)
             
 gWatchdog = Watchdog()
